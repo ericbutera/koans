@@ -14,16 +14,24 @@
 #   about_triangle_project_2.rb
 #
 def triangle(a, b, c)
+  raise TriangleError, 'Parameters must be >= 0' if a <= 0 || b <= 0 || c <= 0
+  raise TriangleError, 'C too large' if c >= a + b
+  raise TriangleError, 'B too large' if b >= a + c
+  raise TriangleError, 'A too large' if a >= b + c
 
   # all sides equal
-  return :equilateral if a == b && b == c
+  return :equilateral if a == b && a == c # && b == c
 
   # exactly 2 sides are equal
   return :isosceles if a == b || a == c || b == c
 
-  :scalene
+  # if no sides are equal
+  return :scalene if a != b && a != c && b != c
+
+  raise TriangleError, 'Invalid input'
 end
 
 # Error class used in part 2.  No need to change this code.
 class TriangleError < StandardError
+
 end
