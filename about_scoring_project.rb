@@ -7,11 +7,10 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 # A greed roll is scored as follows:
 #
 # * A set of three ones is 1000 points
+# * Remaining 1's are worth 100 points.
 #
 # * A set of three numbers (other than ones) is worth 100 times the
 #   number. (e.g. three fives is 500 points).
-#
-# * A one (that is not part of a set of three) is worth 100 points.
 #
 # * A five (that is not part of a set of three) is worth 50 points.
 #
@@ -30,10 +29,54 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 # Your goal is to write the score method.
 
 def score(dice)
-  # You need to write this method
+  raise ArgumentError, 'Dice must be array' unless dice.is_a?(Array)
+
+  score = 0
+
+  return score unless dice.length > 0
+
+  group = Hash.new
+  dice.each do |die|
+    if group.has_key? die
+      group[die] += 1
+    else
+      group[die] = 1
+    end
+  end
+
+  group.each do |die, count|
+    if die == 1
+      if count >= 3
+        count -= 3
+        score += 1000 # set of three ones is 1000 points
+      end
+
+      if count > 0
+        score += count * 100 # handle remaining 1's
+      end
+    end
+
+    if die != 1 && count >= 3
+      score += die * 100 # set of three numbers is worth 100 times number 
+      count -= 3
+    end
+
+    if die == 5 && count > 0 
+      score += count * 50 # five (that is not part of a set of three) is worth 50 points.
+    end
+  end
+
+  score
 end
 
 class AboutScoringProject < Neo::Koan
+  def test_score_requires_array
+    ex = assert_raise(Exception) do
+      score(1)
+    end
+    assert ex.is_a?(ArgumentError)
+  end
+
   def test_score_of_an_empty_list_is_zero
     assert_equal 0, score([])
   end

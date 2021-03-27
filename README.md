@@ -11,6 +11,7 @@ Set up
     - build-essential ruby ruby-dev
 - ruby gems
     - ruby-debug-ide
+    - solargraph
 
 Should be good to go!
 
