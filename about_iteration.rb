@@ -134,5 +134,6 @@ class AboutIteration < Neo::Koan
   # i think its to make sure the file resource is closed after block exits
   #
   # When you get to the "AboutSandwichCode" koan, recheck your answer.
+  # ensure file.close.. seems correct :thumbs-up:
 
 end
