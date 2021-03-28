@@ -15,10 +15,53 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 class Proxy
   def initialize(target_object)
     @object = target_object
-    # ADD MORE CODE HERE
+
+    @sent = Hash.new
   end
 
   # WRITE CODE HERE
+  def method_missing(method_name, *args, &block)
+    return super(method_name, *args, &block) unless @object.respond_to?(method_name)
+
+    if @object.respond_to?(method_name)
+      method = method_name.to_sym
+      record_method_call method
+
+      data = *if args.length > 0
+        @object.send(method, args) # how to call with correct params applied (including none)? i bet the test source has the answer
+      else 
+        @object.send(method)
+      end
+
+      if data.is_a?(Array) && data.length == 1
+        return data[0] # this is rough- would like to find a way to destructure return
+      end
+
+      data
+    end
+  end
+
+  def ensure_method_call_exists(method)
+    @sent[method] = 0 unless called? method
+  end
+
+  def record_method_call(method)
+    ensure_method_call_exists method #.to_sym ?? 
+    @sent[method] += 1
+  end
+
+  def number_of_times_called(method)
+    ensure_method_call_exists method
+    @sent[method]
+  end
+
+  def called?(method)
+    @sent.has_key? method
+  end
+
+  def messages
+    @sent.keys.map { |method| method.to_sym }
+  end
 end
 
 # The proxy object should pass the following Koan:
